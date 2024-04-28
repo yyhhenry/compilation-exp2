@@ -119,3 +119,14 @@
 
 + $I_12 = "GO"(I_11, "}")$
     - $"<Block>" -> "{" "<StmtList>" "}" dot$
+
+= LR(0) Table
+
+#set text(size: 0.8em)
+
+#table(
+  columns: 11,
+  table.header(table.cell(rowspan: 2,[State]), table.cell(colspan: 5, [Action]), table.cell(colspan: 5, [Goto]), [$"stmt"$], [$"<FuncHeader>"$], [$"{"$], [$"}"$], [$"#"$],  [$S$], [$"<StmtList>"$], [$"<Block>"$], [$"<Stmt>"$], [$"<FuncDecl>"$]),
+  [0], [$S_6$], [$S_7$], [$S_8$], [], [], 
+    [1], [2], [5], [3], [4],
+)
