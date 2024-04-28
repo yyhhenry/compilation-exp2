@@ -1,0 +1,12 @@
+let
+const
+true
+false
+null
+undefined
+if
+else
+while
+for
+function
+return
