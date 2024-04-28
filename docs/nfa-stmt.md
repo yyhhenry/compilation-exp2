@@ -1,38 +1,41 @@
 # NFA Stmt
 
-<!-- 1. $S -> dot "<Program>"$
-2. $S -> "<Program>" dot$
-
-3. $"<Program>" -> dot "<StmtList>"$
-4. $"<Program>" -> "<StmtList>" dot$
-
-5. $"<StmtList>" -> dot "<Stmt>" "<StmtListTail>"$
-6. $"<StmtList>" -> "<Stmt>" dot "<StmtListTail>"$
-7. $"<StmtList>" -> "<Stmt>" "<StmtListTail>" dot$
-
-8. $"<StmtListTail>" -> dot "<Stmt>" "<StmtListTail>"$
-9. $"<StmtListTail>" -> "<Stmt>" dot "<StmtListTail>"$
-10. $"<StmtListTail>" -> "<Stmt>" "<StmtListTail>" dot$
-
-11. $"<StmtListTail>" -> dot$
-
-12. $"<Stmt>" -> dot "<FuncDecl>"$
-13. $"<Stmt>" -> "<FuncDecl>" dot$
-
-14. $"<Stmt>" -> dot "{" "<StmtList>" "}"$
-15. $"<Stmt>" -> "{" dot "<StmtList>" "}"$
-16. $"<Stmt>" -> "{" "<StmtList>" dot "}"$
-17. $"<Stmt>" -> "{" "<StmtList>" "}" dot$
-
-18. $"<FuncDecl>" -> dot "function" "<Ident>" "(" "<FormalParamsOpt>" ")" "{" "<StmtList>" "}"$
-19. $"<FuncDecl>" -> "function" dot "<Ident>" "(" "<FormalParamsOpt>" ")" "{" "<StmtList>" "}"$
-20. $"<FuncDecl>" -> "function" "<Ident>" dot "(" "<FormalParamsOpt>" ")" "{" "<StmtList>" "}"$
-21. $"<FuncDecl>" -> "function" "<Ident>" "(" dot "<FormalParamsOpt>" ")" "{" "<StmtList>" "}"$
-22. $"<FuncDecl>" -> "function" "<Ident>" "(" "<FormalParamsOpt>" dot ")" "{" "<StmtList>" "}"$
-23. $"<FuncDecl>" -> "function" "<Ident>" "(" "<FormalParamsOpt>" ")" dot "{" "<StmtList>" "}"$
-24. $"<FuncDecl>" -> "function" "<Ident>" "(" "<FormalParamsOpt>" ")" "{" dot "<StmtList>" "}"$
-25. $"<FuncDecl>" -> "function" "<Ident>" "(" "<FormalParamsOpt>" ")" "{" "<StmtList>" dot "}"$
-26. $"<FuncDecl>" -> "function" "<Ident>" "(" "<FormalParamsOpt>" ")" "{" "<StmtList>" "}" dot$ -->
++ $S -> dot "<Program>"$
++ $S -> "<Program>" dot$
++ $"<Program>" -> dot "<StmtList>"$
++ $"<Program>" -> "<StmtList>" dot$
++ $"<StmtList>" -> dot "<Stmt>" "<StmtList>"$
++ $"<StmtList>" -> "<Stmt>" dot "<StmtList>"$
++ $"<StmtList>" -> "<Stmt>" "<StmtList>" dot$
++ $"<StmtList>" -> dot$
++ $"<Stmt>" -> dot "<FuncDecl>"$
++ $"<Stmt>" -> "<FuncDecl>" dot$
++ $"<Stmt>" -> dot "{" "<StmtList>" "}"$
++ $"<Stmt>" -> "{" dot "<StmtList>" "}"$
++ $"<Stmt>" -> "{" "<StmtList>" dot "}"$
++ $"<Stmt>" -> "{" "<StmtList>" "}" dot$
++ $"<Stmt>" -> dot "<CtrlFlow>"$
++ $"<Stmt>" -> "<CtrlFlow>" dot$
++ $"<CtrlFlow>" -> dot "if" "(" "<Expr>" ")" "<Stmt>" "<ElseOpt>"$
++ $"<CtrlFlow>" -> "if" dot "(" "<Expr>" ")" "<Stmt>" "<ElseOpt>"$
++ $"<CtrlFlow>" -> "if" "(" dot "<Expr>" ")" "<Stmt>" "<ElseOpt>"$
++ $"<CtrlFlow>" -> "if" "(" "<Expr>" dot ")" "<Stmt>" "<ElseOpt>"$
++ $"<CtrlFlow>" -> "if" "(" "<Expr>" ")" dot "<Stmt>" "<ElseOpt>"$
++ $"<CtrlFlow>" -> "if" "(" "<Expr>" ")" "<Stmt>" dot "<ElseOpt>"$
++ $"<CtrlFlow>" -> "if" "(" "<Expr>" ")" "<Stmt>" "<ElseOpt>" dot$
++ $"<ElseOpt>" -> dot "else" "<Stmt>"$
++ $"<ElseOpt>" -> "else" dot "<Stmt>"$
++ $"<ElseOpt>" -> "else" "<Stmt>" dot$
++ $"<ElseOpt>" -> dot$
++ $"<FuncDecl>" -> dot "function" "<Ident>" "(" "<FormalParamsOpt>" ")" "{" "<StmtList>" "}"$
++ $"<FuncDecl>" -> "function" dot "<Ident>" "(" "<FormalParamsOpt>" ")" "{" "<StmtList>" "}"$
++ $"<FuncDecl>" -> "function" "<Ident>" dot "(" "<FormalParamsOpt>" ")" "{" "<StmtList>" "}"$
++ $"<FuncDecl>" -> "function" "<Ident>" "(" dot "<FormalParamsOpt>" ")" "{" "<StmtList>" "}"$
++ $"<FuncDecl>" -> "function" "<Ident>" "(" "<FormalParamsOpt>" dot ")" "{" "<StmtList>" "}"$
++ $"<FuncDecl>" -> "function" "<Ident>" "(" "<FormalParamsOpt>" ")" dot "{" "<StmtList>" "}"$
++ $"<FuncDecl>" -> "function" "<Ident>" "(" "<FormalParamsOpt>" ")" "{" dot "<StmtList>" "}"$
++ $"<FuncDecl>" -> "function" "<Ident>" "(" "<FormalParamsOpt>" ")" "{" "<StmtList>" dot "}"$
++ $"<FuncDecl>" -> "function" "<Ident>" "(" "<FormalParamsOpt>" ")" "{" "<StmtList>" "}" dot$
 
 ```mermaid
 graph LR;
