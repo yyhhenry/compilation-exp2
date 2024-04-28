@@ -1,8 +1,6 @@
 <Program> ::= <StmtList>
 
-<StmtList> ::= <Stmt> <StmtListTail>
-<StmtListTail> ::= <Stmt> <StmtListTail>
-<StmtListTail> ::= ε
+<StmtList> ::= <Stmt> <StmtList> | ε
 
 <Stmt> ->
       <Decl>

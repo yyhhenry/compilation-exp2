@@ -6,15 +6,11 @@
 + $"<Program>" -> dot"<StmtList>"$
 + $"<Program>" -> "<StmtList>" dot$
 
-+ $"<StmtList>" -> dot "<Stmt>" "<StmtListTail>"$
-+ $"<StmtList>" -> "<Stmt>" dot "<StmtListTail>"$
-+ $"<StmtList>" -> "<Stmt>" "<StmtListTail>" dot$
++ $"<StmtList>" -> dot "<Stmt>" "<StmtList>"$
++ $"<StmtList>" -> "<Stmt>" dot "<StmtList>"$
++ $"<StmtList>" -> "<Stmt>" "<StmtList>" dot$
 
-+ $"<StmtListTail>" -> dot "<Stmt>" "<StmtListTail>"$
-+ $"<StmtListTail>" -> "<Stmt>" dot "<StmtListTail>"$
-+ $"<StmtListTail>" -> "<Stmt>" "<StmtListTail>" dot$
-
-+ $"<StmtListTail>" -> dot$
++ $"<StmtList>" -> dot$
 
 + $"<Stmt>" -> dot "<Decl>"$
 + $"<Stmt>" -> "<Decl>" dot$
