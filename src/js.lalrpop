@@ -3,6 +3,61 @@ use lalrpop_util::ErrorRecovery;
 
 grammar<'err>(errors: &'err mut Vec<ErrorRecovery<usize, Token<'input>, &'static str>>);
 
+match {
+    "{",
+    "}",
+    "(",
+    ")",
+    "[",
+    "]",
+    "=",
+    ",",
+    ":",
+    ";",
+    "?",
+    "!",
+    "+",
+    "-",
+    "*",
+    "/",
+    "%",
+    "&&",
+    "||",
+    "==",
+    "!=",
+    "===",
+    "!==",
+    "<",
+    "<=",
+    ">",
+    ">=",
+    "in",
+    "instanceof",
+    ".",
+    "new",
+    "function",
+    "return",
+    "break",
+    "continue",
+    "let",
+    "const",
+    "if",
+    "else",
+    "while",
+    "true",
+    "false",
+    "null",
+    "undefined",
+    r#""([^"]|\\")*""#,
+    r"[0-9]+(.[0-9]+)?",
+    r"[a-zA-Z_][a-zA-Z0-9_]*",
+    
+    // Ignore whitespace and comments
+    r"\s+" => {},
+    r"//[^\n]*" => {},
+    r"/\*[^*]*\*+(?:[^/*][^*]*\*+)*/" => { },
+}
+
 pub JavaScript: JavaScript = {
     <r:StmtList> => JavaScript { body: r },
 }
@@ -123,6 +178,14 @@ FactorR: Expr = {
     <expr:FactorR> "[" <idx:Expr> "]" => Expr::BinOp(BinOp::Idx, Box::new(expr), Box::new(idx)),
     <expr:FactorR> "." <idx:Ident> => Expr::BinOp(BinOp::Idx, Box::new(expr), Box::new(Expr::Literal(Literal::String(idx)))),
     <func:FactorR> "(" <args:ExprListOpt> ")" => Expr::Call {
+        func: Box::new(func),
+        args,
+    },
+    <expr:FactorNew> => expr,
+}
+
+FactorNew: Expr = {
+    "new" <func:FactorNew> "(" <args:ExprListOpt> ")" => Expr::New {
         func: Box::new(func),
         args,
     },

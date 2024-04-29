@@ -82,6 +82,10 @@ pub enum Expr {
         func: Box<Expr>,
         args: Vec<Expr>,
     },
+    New {
+        func: Box<Expr>,
+        args: Vec<Expr>,
+    },
     /// For error recovery
     Error,
 }
