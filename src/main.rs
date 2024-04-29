@@ -72,6 +72,18 @@ impl<'s> LinePos<'s> {
         ))
     }
 }
+fn pos_err<T, E>(err: &ParseError<usize, T, E>) -> (String, usize) {
+    match err {
+        ParseError::InvalidToken { location } => ("Invalid Token".to_string(), *location),
+        ParseError::UnrecognizedEof { location, .. } => ("Unrecognized EOF".to_string(), *location),
+        ParseError::UnrecognizedToken { token, expected } => (
+            format!("Unrecognized Token, expected: {}", expected.join(", "),),
+            token.0,
+        ),
+        ParseError::ExtraToken { token } => ("Extra Token".to_string(), token.0),
+        _ => ("Unknown Error".to_string(), 0),
+    }
+}
 
 fn main() -> Result<()> {
     let args = Args::parse();
@@ -84,21 +96,20 @@ fn main() -> Result<()> {
     let ast = match JavaScriptParser::new().parse(&mut errors, &input) {
         Ok(ast) => ast,
         Err(e) => {
-            let (msg, pos) = match e {
-                ParseError::InvalidToken { location } => ("Invalid Token".to_string(), location),
-                ParseError::UnrecognizedEof { location, .. } => {
-                    ("Unrecognized EOF".to_string(), location)
-                }
-                ParseError::UnrecognizedToken { token, .. } => {
-                    ("Unrecognized Token".to_string(), token.0)
-                }
-                ParseError::ExtraToken { token } => ("Extra Token".to_string(), token.0),
-                _ => ("Unknown Error".to_string(), 0),
-            };
+            let (msg, pos) = pos_err(&e);
             eprintln!("{}", line_pos.source(&args.input_file, &msg, pos)?);
             bail!("Error parsing input file");
         }
     };
+    if errors.is_empty() {
+        println!("No errors found");
+    } else {
+        for err in errors {
+            let (msg, pos) = pos_err(&err.error);
+            eprintln!("{}", line_pos.source(&args.input_file, &msg, pos)?);
+        }
+        bail!("Errors found");
+    }
     let output = serde_json::to_string_pretty(&ast)?;
     if let Some(output_file) = args.output_file {
         let output_file = std::path::Path::new(&output_file).with_extension("json");

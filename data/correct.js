@@ -28,13 +28,11 @@ function i(n) {
     const e = s(n);
     e.host = c;
     const o = e.searchParams.get("q") || "";
-    return (
-        (e.search = ""),
-        e.searchParams.set("cc", "us"),
-        e.searchParams.set("q", o),
-        e.searchParams.set(t, ""),
-        e
-    );
+    e.search = "";
+    e.searchParams.set("cc", "us");
+    e.searchParams.set("q", o);
+    e.searchParams.set(t, "");
+    return e;
 }
 function u() {
     return s().searchParams.has(t);
