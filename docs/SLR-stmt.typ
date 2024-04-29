@@ -28,6 +28,16 @@
 
 非终结符有$S'$, $S$, $"<StmtList>"$, $"<Block>"$, $"<Stmt>"$ 和 $"<FuncDecl>"$。
 
+- $r_0: S' -> S$
+- $r_1: S -> "<StmtList>"$
+- $r_2: "<StmtList>" -> "<Stmt>" "<StmtList>"$
+- $r_3: "<StmtList>" -> epsilon$
+- $r_4: "<Block>" -> "{" "<StmtList>" "}"$
+- $r_5: "<Stmt>" -> "<FuncDecl>"$
+- $r_6: "<Stmt>" -> "<Block>"$
+- $r_7: "<Stmt>" -> "stmt"$
+- $r_8: "<FuncDecl>" -> "<FuncHeader>" "<Block>"$
+
 = SLR(1)
 
 首先求出LR(0)项集族：
@@ -125,8 +135,10 @@
 #set text(size: 0.8em)
 
 #table(
-  columns: 11,
-  table.header(table.cell(rowspan: 2,[State]), table.cell(colspan: 5, [Action]), table.cell(colspan: 5, [Goto]), [$"stmt"$], [$"<FuncHeader>"$], [$"{"$], [$"}"$], [$"#"$],  [$S$], [$"<StmtList>"$], [$"<Block>"$], [$"<Stmt>"$], [$"<FuncDecl>"$]),
-  [0], [$S_6$], [$S_7$], [$S_8$], [], [], 
-    [1], [2], [5], [3], [4],
+    columns: 11,
+    table.header(table.cell(rowspan: 2, [State]), table.cell(colspan: 5, align: center, [Action]), table.cell(colspan: 5, align: center, [Goto]), [$"stmt"$], [$"<FuncHeader>"$], [$"{"$], [$"}"$], [$"#"$],  [$S$], [$"<StmtList>"$], [$"<Block>"$], [$"<Stmt>"$], [$"<FuncDecl>"$]),
+    [0], [$S_6$], [$S_7$], [$S_8$], [], [], 
+        [1], [2], [5], [3], [4],
+    [1], [], [], [], [], [acc], [], [], [], [], [],
+    [2], [$r_1$], [$r_1$], [$r_1$], [$r_1$], [$r_1$], [], [], [], [], [],
 )
