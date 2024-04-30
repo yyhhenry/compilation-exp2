@@ -1,45 +1,80 @@
-// ==UserScript==
-// @name         us-bing-trigger
-// @namespace    http://tampermonkey.net/
-// @version      0.0.5
-// @description  Automatically redirecting to the global version of Bing.
-// @author       yyhhenry@foxmail.com
-// @match        https://www.bing.com/*
-// @match        https://cn.bing.com/*
-// @icon         https://www.google.com/s2/favicons?sz=64&domain=bing.com
-// @grant        none
-// @noframes
-// @homepage     https://github.com/yyhhenry/us-bing-trigger
-// ==/UserScript==
-const c = "www.bing.com",
-    a = "cn.bing.com",
-    t = "us-bing-trigger";
-function s(n) {
-    const e = window.location.href;
-    return new URL(n || e, e);
+const US_BING_HOST = "www.bing.com";
+const CN_BING_HOST = "cn.bing.com";
+const MARK_NAME = "us-bing-trigger";
+const WAIT_TIME = 2000;
+
+function resolveURL(url) {
+    const here = window.location.href;
+    const urlObj = new URL(url ?? here, here);
+    return urlObj;
 }
-function r(n) {
-    const e = s(n);
+
+function isCNBing(url) {
+    const urlObj = resolveURL(url);
     return (
-        e.host === a || (e.host === c && e.searchParams.get("mkt") === "zh-CN")
+        urlObj.host === CN_BING_HOST ||
+        (urlObj.host === US_BING_HOST &&
+            urlObj.searchParams.get("mkt") === "zh-CN")
     );
 }
-function i(n) {
-    const e = s(n);
-    e.host = c;
-    const o = e.searchParams.get("q") || "";
-    e.search = "";
-    e.searchParams.set("cc", "us");
-    e.searchParams.set("q", o);
-    e.searchParams.set(t, "");
-    return e;
+
+function toUSBingURL(url) {
+    const urlObj = resolveURL(url);
+    urlObj.host = US_BING_HOST;
+    const q = urlObj.searchParams.get("q") ?? "";
+    urlObj.search = "";
+
+    // Set cc=us to avoid redirecting to local Bing
+    urlObj.searchParams.set("cc", "us");
+    // Restore the search query
+    urlObj.searchParams.set("q", q);
+    // Add `trigger-from` mark to avoid redirecting again
+    urlObj.searchParams.set(MARK_NAME, "");
+
+    return urlObj;
 }
-function u() {
-    return s().searchParams.has(t);
+
+function hasMark() {
+    const urlObj = resolveURL();
+    return urlObj.searchParams.has(MARK_NAME);
 }
-function l(n) {
-    function f(e) {
-        setTimeout(e, n);
+
+function asyncSleep(ms) {
+    function executor(resolve) {
+        setTimeout(resolve, ms);
     }
-    return new Promise(f);
+    return new Promise(executor);
+}
+
+async function removeMark() {
+    const urlObj = resolveURL();
+    urlObj.searchParams.delete(MARK_NAME);
+    const newURL = urlObj.href;
+    await asyncSleep(WAIT_TIME);
+    window.history.replaceState({}, "", newURL);
+}
+
+async function redirectUSBing() {
+    if (hasMark()) {
+        await removeMark();
+        if (isCNBing()) {
+            console.info("Seems like you don't have a VPN.");
+        } else {
+            console.info("Redirected to US Bing.");
+        }
+    } else {
+        if (isCNBing()) {
+            console.info("Redirecting to US Bing...");
+            window.location.replace(toUSBingURL());
+        }
+    }
+}
+
+redirectUSBing();
+
+console.log(["correct.js", "loaded"]);
+
+function testCommaExpr() {
+    let a = (4, 5);
+    return 1, 2, 3;
 }

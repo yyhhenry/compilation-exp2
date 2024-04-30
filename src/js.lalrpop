@@ -23,6 +23,7 @@ match {
     "%",
     "&&",
     "||",
+    "??",
     "==",
     "!=",
     "===",
@@ -36,6 +37,8 @@ match {
     ".",
     "new",
     "function",
+    "async",
+    "await",
     "return",
     "break",
     "continue",
@@ -96,11 +99,18 @@ Stmt: Stmt = {
     "let" <list:LetList> ";" => Stmt::Let(list),
     "const" <list:ConstList> ";" => Stmt::Const(list),
     "function" <name:Ident> "(" <params:IdentListOpt> ")" <body:Block> => Stmt::Function {
+        r#async: false,
         name,
         params,
         body: Box::new(body),
     },
-    "return" <expr:ExprOrObject> ";" => Stmt::Return(expr),
+     "async" "function" <name:Ident> "(" <params:IdentListOpt> ")" <body:Block> => Stmt::Function {
+        r#async: true,
+        name,
+        params,
+        body: Box::new(body),
+    },
+    "return" <expr:ExplicitExpr> ";" => Stmt::Return(expr),
     "return" ";" => Stmt::Return(Expr::Literal(Literal::Undefined)),
     "break" ";" => Stmt::Break,
     "continue" ";" => Stmt::Continue,
@@ -110,6 +120,17 @@ Stmt: Stmt = {
     Expr <r:!> => { errors.push(r); Stmt::Error },
 }
 
+/// ExplicitExpr is used to avoid ambiguity with comma operator
+/// Only after `return`, or wrapped with `()`
+ExplicitExpr: Expr = {
+    <exprs:ExprList> => if exprs.len() == 1 {
+        let mut exprs = exprs;
+        exprs.remove(0)
+    } else {
+        Expr::Comma(exprs)
+    },
+}
+
 ExprOrObject: Expr = {
     <obj:Object> => Expr::Literal(obj),
     <expr:Expr> => expr,
@@ -117,6 +138,7 @@ ExprOrObject: Expr = {
 
 Expr: Expr = {
     <a:EqExpr> => a,
+    "await" <a:EqExpr> => Expr::Await(Box::new(a)),
     ! => { errors.push(<>); Expr::Error }
 }
 
@@ -126,8 +148,13 @@ EqExpr: Expr = {
 }
 
 CondExpr: Expr = {
-    <cond:OrExpr> "?" <then:CondExpr> ":" <r#else:CondExpr> => Expr::Cond { cond: Box::new(cond), then: Box::new(then), r#else: Box::new(r#else) },
-    <cond:OrExpr> => cond,
+    <cond:UnwrapOrExpr> "?" <then:CondExpr> ":" <r#else:CondExpr> => Expr::Cond { cond: Box::new(cond), then: Box::new(then), r#else: Box::new(r#else) },
+    <cond:UnwrapOrExpr> => cond,
+}
+
+UnwrapOrExpr: Expr = {
+    <a:OrExpr> "??" <b:UnwrapOrExpr> => Expr::BinOp(BinOp::UnwrapOr, Box::new(a), Box::new(b)),
+    <a:OrExpr> => a,
 }
 
 OrExpr: Expr = {
@@ -168,9 +195,9 @@ Term: Expr = {
 }
 
 Factor: Expr = {
-    "!" <expr:FactorR> => Expr::UnOp(UnOp::Not, Box::new(expr)),
-    "-" <expr:FactorR> => Expr::UnOp(UnOp::Neg, Box::new(expr)),
-    "+" <expr:FactorR> => Expr::UnOp(UnOp::Pos, Box::new(expr)),
+    "-" <expr:Factor> => Expr::UnOp(UnOp::Neg, Box::new(expr)),
+    "+" <expr:Factor> => Expr::UnOp(UnOp::Pos, Box::new(expr)),
+    "!" <expr:Factor> => Expr::UnOp(UnOp::Not, Box::new(expr)),
     <expr:FactorR> => expr,
 }
 
@@ -195,7 +222,7 @@ FactorNew: Expr = {
 ExprElem: Expr = {
     <a:Literal> => Expr::Literal(a),
     <a:Ident> => Expr::Ident(a),
-    "(" <expr:ExprOrObject> ")" => expr,
+    "(" <expr:ExplicitExpr> ")" => expr,
 }
 
 Literal: Literal = {
@@ -237,7 +264,7 @@ ExprList: Vec<Expr> = {
         exprs.push(expr);
         exprs
     },
-    <expr:Expr> => vec![expr],
+    <expr:ExprOrObject> => vec![expr],
 }
 
 KVListOpt: Vec<(String, Expr)> = {
@@ -250,7 +277,7 @@ KVListOpt: Vec<(String, Expr)> = {
 /// put it after `return` or `=`,
 /// or wrap it with `()`
 Object: Literal = {
-    "{" <list:KVList> "}" => k_v_list_to_object(list),
+    "{" <list:KVListOpt> "}" => k_v_list_to_object(list),
 }
 
 KVList: Vec<(String, Expr)> = {

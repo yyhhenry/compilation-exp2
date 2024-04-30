@@ -34,6 +34,8 @@ pub enum BinOp {
     And,
     /// ||
     Or,
+    /// ??
+    UnwrapOr,
     /// in
     In,
     /// instanceof
@@ -72,6 +74,7 @@ pub enum Expr {
     Literal(Literal),
     BinOp(BinOp, Box<Expr>, Box<Expr>),
     UnOp(UnOp, Box<Expr>),
+    Comma(Vec<Expr>),
     Cond {
         cond: Box<Expr>,
         then: Box<Expr>,
@@ -86,6 +89,7 @@ pub enum Expr {
         func: Box<Expr>,
         args: Vec<Expr>,
     },
+    Await(Box<Expr>),
     /// For error recovery
     Error,
 }
@@ -111,6 +115,7 @@ pub enum Stmt {
     Let(Vec<Init>),
     Const(Vec<Init>),
     Function {
+        r#async: bool,
         name: String,
         params: Vec<String>,
         body: Box<Stmt>,
