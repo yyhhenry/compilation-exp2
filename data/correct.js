@@ -85,5 +85,8 @@ console.log([
 
 function testCommaExpr() {
     let a = (4, 5);
+    /**
+     * The comma operator evaluates each of its operands (from left to right) and returns the value of the last operand.
+     */
     return 1, 2, 3;
 }
