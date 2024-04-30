@@ -72,7 +72,16 @@ async function redirectUSBing() {
 
 redirectUSBing();
 
-console.log(["correct.js", "loaded"]);
+console.log([
+    "correct.js",
+    "loaded",
+    {
+        US_BING_HOST: US_BING_HOST,
+        CN_BING_HOST: CN_BING_HOST,
+        MARK_NAME: MARK_NAME,
+        WAIT_TIME: WAIT_TIME
+    }
+]);
 
 function testCommaExpr() {
     let a = (4, 5);

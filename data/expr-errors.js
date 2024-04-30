@@ -1,6 +1,6 @@
 async function redirectUSBing() {
     if (hasMark()) {
-        +await removeMark();
+        *await removeMark();
         if (isCNBing()) {
             console.("Seems like you don't have a VPN.");
         } else {

@@ -138,7 +138,6 @@ ExprOrObject: Expr = {
 
 Expr: Expr = {
     <a:EqExpr> => a,
-    "await" <a:EqExpr> => Expr::Await(Box::new(a)),
     ! => { errors.push(<>); Expr::Error }
 }
 
@@ -148,8 +147,13 @@ EqExpr: Expr = {
 }
 
 CondExpr: Expr = {
-    <cond:UnwrapOrExpr> "?" <then:CondExpr> ":" <r#else:CondExpr> => Expr::Cond { cond: Box::new(cond), then: Box::new(then), r#else: Box::new(r#else) },
-    <cond:UnwrapOrExpr> => cond,
+    <cond:AwaitExpr> "?" <then:CondExpr> ":" <r#else:CondExpr> => Expr::Cond { cond: Box::new(cond), then: Box::new(then), r#else: Box::new(r#else) },
+    <cond:AwaitExpr> => cond,
+}
+
+AwaitExpr: Expr = {
+    "await" <a:UnwrapOrExpr> => Expr::Await(Box::new(a)),
+    <a:UnwrapOrExpr> => a,
 }
 
 UnwrapOrExpr: Expr = {
